@@ -1,0 +1,71 @@
+.container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    background: url("assets/background.jpg") 50% 50%;
+    background-size: cover;
+
+    color: white;
+}
+
+header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.2);
+    -webkit-app-region: drag;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+}
+
+footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px;
+    height: 100px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+footer .progress-status {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.progress-status progress-bar {
+    height: 30px;
+}
+
+.progress-info {
+    flex: 1;
+    margin-top: 5px;
+    text-align: right;
+}
+
+footer button {
+    width: 150px;
+    height: 100%;
+    margin-left: 10px;
+    font-size: 2em;
+}
+
+.news {
+    flex: 2;
+}
+
+.featured, .sessions {
+    flex: 1;
+}
+
+.news, .featured, .sessions {
+    margin: 10px;
+}

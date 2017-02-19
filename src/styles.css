@@ -1,0 +1,80 @@
+* {
+    box-sizing: border-box;
+    -webkit-user-select: inherit;
+    cursor: inherit;
+}
+
+html, body {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
+
+    font-family: "Fira Sans", sans-serif;
+    -webkit-user-select: none;
+    cursor: default;
+}
+
+h2 {
+    font-size: 1.6em;
+    font-weight: 200;
+}
+
+h1, h2, h3, h4, h5, h6, button {
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    -webkit-user-select: none;
+}
+
+button {
+    border-radius: 3px;
+    border: 0px;
+    background: linear-gradient(to bottom,  #1F76AD 0%,#015C94 100%);
+    color: white;
+    outline: none;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+button:hover {
+    background: linear-gradient(to bottom, #2280bd 0%, #0163a0 100%);
+    cursor: pointer;
+}
+
+button:active {
+    background: linear-gradient(to bottom, #0163a0 0%, #2280bd 100%);
+}
+
+button[disabled], button[disabled]:active, button[disabled]:hover {
+    color: gray;
+    background: #015C94;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+@font-face {
+    font-family: "Fira Sans";
+    src: url("assets/FiraSans-Regular.otf") format("opentype");
+}
+@font-face {
+    font-family: "Fira Sans";
+    src: url("assets/FiraSans-Bold.otf") format("opentype");
+    font-weight: bold;
+}
+@font-face {
+    font-family: "Fira Sans";
+    src: url("assets/FiraSans-Italic.otf") format("opentype");
+    font-style: italic, oblique;
+}
+@font-face {
+    font-family: "Fira Sans";
+    src: url("assets/FiraSans-Light.otf") format("opentype");
+    font-weight: 300;
+}
+@font-face {
+    font-family: "Fira Sans";
+    src: url("assets/FiraSans-Thin.otf") format("opentype");
+    font-weight: 200;
+}

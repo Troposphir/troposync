@@ -1,0 +1,67 @@
+{
+  "name": "troposync",
+  "productName": "troposync",
+  "version": "1.0.0",
+  "description": "My Electron application description",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "lint": "tslint src"
+  },
+  "keywords": [],
+  "author": "kroltan",
+  "license": "MIT",
+  "config": {
+    "forge": {
+      "make_targets": {
+        "win32": [
+          "squirrel"
+        ],
+        "darwin": [
+          "zip"
+        ],
+        "linux": [
+          "deb",
+          "rpm"
+        ]
+      },
+      "electronPackagerConfig": {},
+      "electronWinstallerConfig": {
+        "name": "troposync"
+      },
+      "electronInstallerDebian": {},
+      "electronInstallerRedhat": {},
+      "github_repository": {
+        "owner": ""
+      },
+      "windowsStoreConfig": {
+        "packageName": "",
+        "name": "troposync"
+      }
+    }
+  },
+  "dependencies": {
+    "@angular/common": "^2.4.8",
+    "@angular/compiler": "^2.4.8",
+    "@angular/core": "^2.4.8",
+    "@angular/platform-browser": "^2.4.8",
+    "@angular/platform-browser-dynamic": "^2.4.8",
+    "@angular/router": "^3.4.8",
+    "@types/electron": "^1.4.32",
+    "electron-compile": "^6.0.0",
+    "electron-devtools-installer": "^2.1.0",
+    "reflect-metadata": "^0.1.9",
+    "tslib": "^1.5.0",
+    "zone.js": "^0.7.7"
+  },
+  "devDependencies": {
+    "babel-plugin-transform-async-to-generator": "^6.22.0",
+    "babel-preset-env": "^1.1.8",
+    "babel-preset-react": "^6.23.0",
+    "electron-prebuilt-compile": "1.4.15",
+    "tslint": "^4.4.2",
+    "typescript": "^2.1.6"
+  }
+}
