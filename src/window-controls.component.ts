@@ -61,7 +61,7 @@ export class WindowControlsComponent {
         remote.getCurrentWindow().close();
     }
 
-    public getControlsSide(): String {
+    public getControlsSide(): string {
         if (process.platform == "darwin") {
             return "left";
         }

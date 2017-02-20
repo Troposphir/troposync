@@ -30,7 +30,7 @@ export class ProgressBarComponent {
         return (this.value - this.min) / range;
     }
 
-    public _getPercentString(): String | null {
+    public _getPercentString(): string | null {
         if (isNullOrUndefined(this.value)) {
             return null;
         }
