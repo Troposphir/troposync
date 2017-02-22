@@ -85,6 +85,7 @@ export class Project {
         let workPath = getWorkPath(this.rootPath);
         let files = await Promise.all(lodash(this.modules)
             .reverse()
+            .filter("enabled")
             .map(m => deepFileList(path.join(workPath, m.name)))
             .value()
         );
@@ -95,8 +96,8 @@ export class Project {
                 let module = relative.split(path.sep, 2)[0];
                 return new FileInfo(path.relative(path.join(workPath, module), file), module);
             })
-            .filter(i => IGNORED_EXTENSIONS.indexOf(path.extname(i.filePath)) >= 0)
+            .filter(i => IGNORED_EXTENSIONS.indexOf(path.extname(i.filePath)) < 0)
             .uniqBy(i => i.filePath)
-            .value()
+            .value();
     }
 }

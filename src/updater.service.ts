@@ -15,8 +15,7 @@ export let UPDATE_API_URL = new OpaqueToken("updater.api.url");
 
 @Injectable()
 export class UpdaterService {
-    private constructor(@Inject(Http) public http: Http, @Inject(UPDATE_API_URL) private apiUrl: string) {
-    }
+    private constructor(@Inject(Http) public http: Http, @Inject(UPDATE_API_URL) private apiUrl: string) {}
 
     public async getChanges(project: Project): Promise<ModuleChange[]> {
         let params = new URLSearchParams();
@@ -29,6 +28,7 @@ export class UpdaterService {
             version: string
             changes: {file: string, action: string}[]
         }[] = response.json();
+
         return data.map(u => new ModuleChange(
             u.module,
             Version.fromString(u.version),
@@ -39,11 +39,12 @@ export class UpdaterService {
     public performChange(project: Project, module: string, change: FileChange): Observable<ProcessStatus<string>> {
         return Observable.create(async (observer: Observer<ProcessStatus<string>>) => {
             let destination = path.join(project.workPath, module, change.file);
+            await fs.mkdirs(path.dirname(destination));
             if (change.action === "modify") {
                 observer.next(new ProcessStatus(0, 1, `Downloading ${change.file}`));
                 let response = await this.http.get(`${this.apiUrl}/file/${module}/${change.file}`).toPromise();
                 await fs.writeFile(destination, response.text());
-                observer.next(new ProcessStatus(0, 1, `Downloaded ${change.file}`));
+                observer.next(new ProcessStatus(1, 1, `Downloaded ${change.file}`));
             } else if (change.action === "delete") {
                 fs.remove(destination);
             }
