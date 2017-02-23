@@ -7,6 +7,9 @@ import {Component} from '@angular/core';
 
 import {ProgressBarComponent} from "./progress-bar.component";
 import {WindowControlsComponent} from "./window-controls.component";
+import {CardsComponent} from './cards/cards.component';
+import {CardComponent} from './cards/card.component';
+
 import {UpdaterService, UPDATE_API_URL} from "./updater.service";
 import {Project} from "./updater/project";
 import {ProcessStatus} from "./updater/process-status";
@@ -72,7 +75,7 @@ export class AppComponent implements OnInit {
         BrowserModule,
         HttpModule
     ],
-    declarations: [AppComponent, ProgressBarComponent, WindowControlsComponent],
+    declarations: [AppComponent, ProgressBarComponent, WindowControlsComponent, CardsComponent, CardComponent],
     bootstrap: [AppComponent],
     providers: [
         UpdaterService as any,
