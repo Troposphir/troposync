@@ -3,6 +3,8 @@ import fs = require("fs-promise");
 import path = require("path");
 import {Version} from "./version";
 
+const IGNORED_EXTENSIONS = [".tmp"];
+
 function getWorkPath(root: string): string {
     return path.join(root, ".sync");
 }
@@ -40,19 +42,21 @@ export class Project {
 
     public get workPath() {return getWorkPath(this.rootPath);}
 
-    public static async open(root: string): Promise<Project | null> {
+    public static async open(root: string): Promise<Project> {
         let stat = await fs.stat(root);
         if (!stat.isDirectory()) {
-            return null;
+            throw new Error("Project root not found");
         }
         let workpath = getWorkPath(root);
         if (!(await fs.stat(workpath)).isDirectory()) {
-            return null;
+            throw new Error("Directory is not a valid troposync project");
         }
         let contents = await fs.readFile(path.join(workpath, "status.json"));
-        let descriptor = JSON.parse(contents.toString("utf8"));
+        let descriptor: {
+            modules: {name: string, version: string, enabled: boolean}[]
+        } = JSON.parse(contents.toString("utf8"));
         let project = new Project();
-        project.modules = descriptor.modules.map((m: {name: string, version: string, enabled: boolean}) => {
+        project.modules = descriptor.modules.map(m => {
             let mod = new ModuleDescriptor();
             mod.name = m.name;
             mod.version = Version.fromString(m.version);
@@ -63,11 +67,26 @@ export class Project {
         return project;
     }
 
+    public getModule(name: string): ModuleDescriptor {
+        return lodash.find(this.modules, m => m.name === name);
+    }
+
+    public async save(): Promise<void> {
+        await fs.writeJson(path.join(this.rootPath, "status.json"), {
+            modules: this.modules.map(m => ({
+                name: m.name,
+                version: m.version.toString(),
+                enabled: m.enabled
+            }))
+        });
+    }
+
     public async listFiles(): Promise<FileInfo[]> {
         let workPath = getWorkPath(this.rootPath);
         let files = await Promise.all(lodash(this.modules)
             .reverse()
-            .map((m: ModuleDescriptor) => deepFileList(path.join(workPath, m.name)))
+            .filter("enabled")
+            .map(m => deepFileList(path.join(workPath, m.name)))
             .value()
         );
         return lodash(files)
@@ -77,7 +96,8 @@ export class Project {
                 let module = relative.split(path.sep, 2)[0];
                 return new FileInfo(path.relative(path.join(workPath, module), file), module);
             })
-            .uniqBy((i: FileInfo) => i.filePath)
-            .value()
+            .filter(i => IGNORED_EXTENSIONS.indexOf(path.extname(i.filePath)) < 0)
+            .uniqBy(i => i.filePath)
+            .value();
     }
 }

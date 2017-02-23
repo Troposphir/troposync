@@ -16,8 +16,8 @@
     </main>
     <footer>
         <div class="progress-status">
-            <progress-bar [value]="0.5"></progress-bar>
-            <div class="progress-info">Updating...</div>
+            <progress-bar [value]="status == null? 1 : (status.currentStep /status.stepCount)"></progress-bar>
+            <div class="progress-info">{{process}}{{status == null? "" : ":"}} {{status?.payload}}</div>
         </div>
         <button disabled>Play</button>
     </footer>

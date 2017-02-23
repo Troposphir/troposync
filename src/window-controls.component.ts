@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {remote} from "electron";
 
 @Component({
@@ -35,11 +35,21 @@ import {remote} from "electron";
         }
     `],
     host: {
-        "[class.left]": "getControlsSide() == 'left'",
-        "[class.right]": "getControlsSide() == 'right'"
+        "[class.left]": "controlsSide == 'left'",
+        "[class.right]": "controlsSide == 'right'"
     }
 })
-export class WindowControlsComponent {
+export class WindowControlsComponent implements OnInit {
+    public controlsSide: string;
+
+    ngOnInit(): void {
+        if (process.platform === "darwin") {
+            this.controlsSide = "left";
+        } else {
+            this.controlsSide = "right";
+        }
+    }
+
     public minimize(): void {
         remote.getCurrentWindow().minimize();
     }
@@ -59,12 +69,5 @@ export class WindowControlsComponent {
 
     public close(): void {
         remote.getCurrentWindow().close();
-    }
-
-    public getControlsSide(): string {
-        if (process.platform == "darwin") {
-            return "left";
-        }
-        return "right";
     }
 }
