@@ -9,12 +9,12 @@ const isDevMode = process.execPath.match(/[\\/]electron/);
 const createLauncherWindow = async () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 860,
-    height: 600,
+    width: 1100,
+    height: 700,
     frame: false,
     resizable: true,
     minWidth: 860,
-    minHeight: 600
+    minHeight: 700
   });
 
   // and load the index.html of the app.
