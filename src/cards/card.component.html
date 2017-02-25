@@ -1,4 +1,4 @@
-<div class="card" [style.backgroundImage]="'url(' + model.image + ')'">
+<div class="card" (click)="clicked()" [style.backgroundImage]="'url(' + model.image + ')'">
     <div class="info">
         <h3>{{model.title}}</h3>
         <span class="description">{{model.description}}</span>

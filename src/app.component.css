@@ -17,45 +17,62 @@ header {
     padding: 10px;
     background: rgba(0, 0, 0, 0.2);
     -webkit-app-region: drag;
+    border-bottom: rgba(255, 255, 255, 0.05) solid 1px;
 }
 
 main {
     flex: 1;
     display: flex;
     flex-direction: row;
+    margin: 20px;
 }
 
 footer {
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 10px;
+    padding: 30px;
     height: 100px;
     background: rgba(0, 0, 0, 0.2);
+    border-top: rgba(255, 255, 255, 0.05) solid 1px;
 }
 
 footer .progress-status {
     flex: 1;
     height: 100%;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
 }
 
 .progress-status progress-bar {
-    height: 30px;
+    height: 20px;
+    flex: 1;
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 .progress-info {
-    flex: 1;
-    margin-top: 5px;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-right: 10px;
     text-align: right;
+    width: 250px;
+}
+
+.progress-info .process-detail {
+    font-weight: 200;
+    font-size: 0.8em;
+    color: rgba(255, 255, 255, 0.6);
 }
 
 footer button {
     width: 150px;
-    height: 100%;
+    height: 55px;
     margin-left: 10px;
-    font-size: 2em;
+    font-size: 1.5em;
+    font-family: inherit;
+    font-weight: 300;
+    transition: all .1s ease-in-out;
 }
 
 section {

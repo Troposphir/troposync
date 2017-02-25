@@ -23,6 +23,11 @@ h2 {
     font-weight: 200;
 }
 
+h4 {
+    font-weight: 300;
+    font-size: 0.9em;
+}
+
 h1, h2, h3, h4, h5, h6, button {
     margin: 0;
     line-height: 1.5em;
@@ -34,24 +39,24 @@ h1, h2, h3, h4, h5, h6, button {
 button {
     border-radius: 3px;
     border: 0px;
-    background: linear-gradient(to bottom,  #1F76AD 0%,#015C94 100%);
+    background: #0067a0;
     color: white;
     outline: none;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    text-shadow: none;
 }
 
 button:hover {
-    background: linear-gradient(to bottom, #2280bd 0%, #0163a0 100%);
+    background: #2280bd;
     cursor: pointer;
 }
 
 button:active {
-    background: linear-gradient(to bottom, #0163a0 0%, #2280bd 100%);
+    background: #2280bd;
 }
 
 button[disabled], button[disabled]:active, button[disabled]:hover {
-    color: gray;
-    background: #015C94;
+    opacity: 0.5;
+    background: #0067a0;
     pointer-events: none;
     cursor: not-allowed;
 }

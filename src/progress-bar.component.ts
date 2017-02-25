@@ -9,14 +9,17 @@ import {isNullOrUndefined} from "util";
     styles: [`
         .container {
             height: 100%;
-            padding: 1px;
-            background-color: black;
+            border: #0c3447 1px solid;
+            background-color: #0f1c24;
+            border-radius: 3px;
         }
         
         .bar {
             width: 100%;
             height: 100%;
-            background-color: #015C94;
+            background-color: #005e92;
+            border-radius: 3px;
+            transition: all .5s ease-in-out;
         }
     `]
 })
