@@ -2,3 +2,5 @@ node_modules
 typings
 out
 .idea
+.sync
+sync.json

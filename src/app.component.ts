@@ -7,7 +7,7 @@ import {Component} from '@angular/core';
 
 import {ProgressBarComponent} from "./progress-bar.component";
 import {WindowControlsComponent} from "./window-controls.component";
-import {CardsComponent} from './cards/cards.component';
+import {CardsComponent} from './news/news.component';
 import {CardComponent} from './cards/card.component';
 
 import {UpdaterService, UPDATE_API_URL} from "./updater.service";
@@ -27,6 +27,7 @@ let config: {
 })
 export class AppComponent implements OnInit {
     public process: string;
+    public isPlayable: boolean = false;
     public status: ProcessStatus<string> | null;
 
     constructor(@Inject(UpdaterService) private updater: UpdaterService) {}
@@ -42,26 +43,33 @@ export class AppComponent implements OnInit {
     }
 
     private async startUpdate(): Promise<void> {
-        let project = await Project.open("./test-fs");
-        let modulesToUpdate = await this.updater.getChanges(project);
-        for (let module of modulesToUpdate) {
-            this.process = `Updating module ${module.name}`;
-            for (let change of module.changes) {
-                let observable = this.updater.performChange(project, module.name, change);
-                await observable.forEach(this.statusUpdater());
+        try {
+            let project = await Project.open("./test-fs");
+            let modulesToUpdate = await this.updater.getChanges(project);
+            for (let module of modulesToUpdate) {
+                this.process = `Updating module ${module.name}`;
+                for (let change of module.changes) {
+                    let observable = this.updater.performChange(project, module.name, change);
+                    await observable.forEach(this.statusUpdater());
+                }
+                project.getModule(module.name).version = module.version;
             }
-            project.getModule(module.name).version = module.version;
+            this.status = null;
+            this.process = "Done downloading";
+            await project.save();
+
+            this.process = "Applying updates";
+            await ProjectBaker.bake(project, config.gameRoot)
+                .forEach(this.statusUpdater());
+
+            this.process = "Ready to play";
+        } catch (e) {
+            this.process = "Error ocurred while updating. Check devtools for details.";
+            console.error(e);
         }
         this.status = null;
-        this.process = "Done downloading";
-        await project.save();
-
-        this.process = "Applying updates";
-        await ProjectBaker.bake(project, config.gameRoot)
-            .forEach(this.statusUpdater());
-
-        this.process = "Ready to play";
-        this.status = null;
+        this.isPlayable = true;
+        console.debug("Updating concluded");
     }
 
     ngOnInit(): void {

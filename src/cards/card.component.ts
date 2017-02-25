@@ -1,34 +1,43 @@
-import { Component, Input } from '@angular/core';
-import { NewsEntry } from './news';
+import {Component, Input} from '@angular/core';
+import { Card } from './card';
 
 @Component ({
     selector: 'card',
     templateUrl: './cards/card.component.html',
     styles: [`
-        .news-card {
-            display: inline-block;
-            position: relative;
-            border: #0c3447 1px solid;
-        }
-        .news-card .info {
-            position: absolute;
-            bottom: 0;
-            background-color: rgba(15, 28, 36, 0.97);
-            padding: 12px;
+        :host {
+            display: block;
         }
 
-        .news-card .info .news-title {
+        .card {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column-reverse;
+            border: #0c3447 1px solid;
+            background-size: cover;
+        }
+        
+        .info {
+            flex: 0;
+            background-color: rgba(15, 28, 36, 0.8);
+            padding: 12px;
+            max-height: 100px;
+        }
+
+        h3 {
             font-weight: 300;
             text-transform: uppercase;
             padding-bottom: 6px;
         }
 
-        .news-card .info .news-desc {
-            font-weight: 100;
+        .description {
+            font-weight: 200;
             font-size: 0.9em;
+            text-overflow: ellipsis;
         }
     `]
 })
 export class CardComponent {
-    @Input() newsEntry: NewsEntry;
+    @Input() model: Card;
 }

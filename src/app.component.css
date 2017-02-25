@@ -58,6 +58,15 @@ footer button {
     font-size: 2em;
 }
 
+section {
+    display: flex;
+    flex-direction: column;
+}
+
+section :last-child {
+    flex: 1;
+}
+
 .news {
     flex: 2;
 }

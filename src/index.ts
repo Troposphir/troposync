@@ -14,7 +14,10 @@ const createLauncherWindow = async () => {
     frame: false,
     resizable: true,
     minWidth: 860,
-    minHeight: 700
+    minHeight: 700,
+    webPreferences: {
+      experimentalFeatures: true
+    }
   });
 
   // and load the index.html of the app.
