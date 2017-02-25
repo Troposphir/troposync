@@ -21,6 +21,14 @@ import { Card } from './card';
             transition: all .1s ease-in-out;
         }
 
+        :host:nth-child(1) h3 {
+            font-size: 1.17em;
+        }
+
+        :host:nth-child(1) .description {
+            font-size: 0.9em;
+        }
+
         .card:hover { transform: scale(1.01); }
         
         .info {
@@ -31,13 +39,14 @@ import { Card } from './card';
         }
 
         h3 {
+            font-size: 0.9em;
             font-weight: 300;
             text-transform: uppercase;
         }
 
         .description {
             font-weight: 200;
-            font-size: 0.9em;
+            font-size: 0.8em;
             text-overflow: ellipsis;
         }
     `]
