@@ -1,3 +1,4 @@
+import{shell} from 'electron';
 import {Component, Input} from '@angular/core';
 import { Card } from './card';
 
@@ -16,7 +17,11 @@ import { Card } from './card';
             flex-direction: column-reverse;
             border: #0c3447 1px solid;
             background-size: cover;
+            background-position: center;
+            transition: all .1s ease-in-out;
         }
+
+        .card:hover { transform: scale(1.01); }
         
         .info {
             flex: 0;
@@ -28,7 +33,6 @@ import { Card } from './card';
         h3 {
             font-weight: 300;
             text-transform: uppercase;
-            padding-bottom: 6px;
         }
 
         .description {
@@ -40,4 +44,9 @@ import { Card } from './card';
 })
 export class CardComponent {
     @Input() model: Card;
+
+    clicked() {
+        console.log('ev');
+        shell.openExternal(this.model.action);
+    }
 }

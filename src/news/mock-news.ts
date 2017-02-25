@@ -4,13 +4,19 @@ export const NEWS: Card[] = [
     {
         title: 'New Design Contest',
         description: 'Gravity\'17 is now open! Click here to learn more.',
-        action: '',
-        image: 'assets/card-examples/gravity17-lg.png'
+        action: 'http://atmosphir.com',
+        image: 'assets/card-examples/gravity.jpg'
     },
     {
         title: 'Multiplayer, Bungees and More',
         description: 'Read the full changelog.',
         action: '',
-        image: ''
+        image: 'assets/card-examples/tropica.jpg'
+    },
+    {
+        title: 'The Balance Update',
+        description: 'Coming soon.',
+        action: '',
+        image: 'assets/card-examples/combat.jpg'
     },
 ];
