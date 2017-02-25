@@ -11,13 +11,20 @@
 }
 
 header {
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: rgba(255, 255, 255, 0.05) solid 1px;
+}
+
+header .window-drag {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 10px;
-    background: rgba(0, 0, 0, 0.2);
+
+    margin: 5px; /* put a border around the draggable area so user can resize */
+    padding: 5px;
+    height: 100%;
+
     -webkit-app-region: drag;
-    border-bottom: rgba(255, 255, 255, 0.05) solid 1px;
 }
 
 main {
@@ -41,19 +48,16 @@ footer .progress-status {
     flex: 1;
     height: 100%;
     display: flex;
-    flex-direction: row;
+    flex-direction: row-reverse;
+    align-items: center;
 }
 
 .progress-status progress-bar {
     height: 20px;
     flex: 1;
-    margin-top: auto;
-    margin-bottom: auto;
 }
 
 .progress-info {
-    margin-top: auto;
-    margin-bottom: auto;
     margin-right: 10px;
     text-align: right;
     width: 250px;

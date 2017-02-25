@@ -1,7 +1,9 @@
 <div class="container">
     <header>
-        <img src="assets/logo.png" alt="Atmosphir">
-        <window-controls></window-controls>
+        <div class="window-drag">
+            <img src="assets/logo.png" alt="Atmosphir">
+            <window-controls></window-controls>
+        </div>
     </header>
     <main>
         <section class="news">
@@ -17,12 +19,16 @@
     </main>
     <footer>
         <div class="progress-status">
-            <progress-bar [value]="status == null? 1 : (status.currentStep /status.stepCount)"></progress-bar>
             <div class="progress-info">
                 <h4>{{process}}</h4>
-                <span class="process-detail">{{status?.payload}}</span>
+                <span class="process-detail">{{status.current?.payload}}</span>
             </div>
+            <progress-bar
+                    [value]="status.currentStep"
+                    [max]="status.stepCount"
+                    [hidden]="status.stepCount == 0"
+            ></progress-bar>
         </div>
-        <button [disabled]="!isPlayable">Play</button>
+        <button [disabled]="!isPlayable">{{isPlayable? "Play" : "Updating"}}</button>
     </footer>
 </div>

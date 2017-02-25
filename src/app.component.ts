@@ -10,12 +10,12 @@ import {WindowControlsComponent} from "./window-controls.component";
 import {CardsComponent} from './news/news.component';
 import {CardComponent} from './cards/card.component';
 
-import {UpdaterService, UPDATE_API_URL} from "./updater.service";
+import {UpdaterService} from "./updater.service";
 import {Project} from "./updater/project";
-import {ProcessStatus} from "./updater/process-status";
+import {ProcessStatus, ProcessStatusGroup} from "./updater/process-status";
 import {ProjectBaker} from "./updater/baker";
 
-let config: {
+export let config: {
     apiUrl: string,
     gameRoot: string
 } = fs.readJsonSync("./sync.json");
@@ -28,15 +28,17 @@ let config: {
 export class AppComponent implements OnInit {
     public process: string;
     public isPlayable: boolean = false;
-    public status: ProcessStatus<string> | null;
+    public status: ProcessStatusGroup<string>;
 
-    constructor(@Inject(UpdaterService) private updater: UpdaterService) {}
+    constructor(@Inject(UpdaterService) private updater: UpdaterService) {
+        this.status = new ProcessStatusGroup<string>();
+    }
 
     private statusUpdater(): (status: ProcessStatus<string>) => void {
         return (status: ProcessStatus<string>) => {
-            this.status = status;
+            this.status.add(status);
             console.debug(
-                `Update Status Changed (${status.currentStep}/${status.stepCount}):`,
+                `Update Status Changed (${this.status.currentStep}/${this.status.stepCount}):`,
                 status.payload
             );
         }
@@ -44,7 +46,8 @@ export class AppComponent implements OnInit {
 
     private async startUpdate(): Promise<void> {
         try {
-            let project = await Project.open("./test-fs");
+            this.process = "Checking for updates";
+            let project = await Project.open(".");
             let modulesToUpdate = await this.updater.getChanges(project);
             for (let module of modulesToUpdate) {
                 this.process = `Updating module ${module.name}`;
@@ -54,20 +57,22 @@ export class AppComponent implements OnInit {
                 }
                 project.getModule(module.name).version = module.version;
             }
-            this.status = null;
+            this.status.finish()
             this.process = "Done downloading";
             await project.save();
 
-            this.process = "Applying updates";
-            await ProjectBaker.bake(project, config.gameRoot)
-                .forEach(this.statusUpdater());
+            if (modulesToUpdate.length > 0) {
+                this.process = "Applying updates";
+                await ProjectBaker.bake(project, config.gameRoot)
+                    .forEach(this.statusUpdater());
+            }
 
             this.process = "Ready to play";
         } catch (e) {
             this.process = "Error ocurred while updating. Check devtools for details.";
             console.error(e);
         }
-        this.status = null;
+        this.status.finish();
         this.isPlayable = true;
         console.debug("Updating concluded");
     }
@@ -86,8 +91,7 @@ export class AppComponent implements OnInit {
     declarations: [AppComponent, ProgressBarComponent, WindowControlsComponent, CardsComponent, CardComponent],
     bootstrap: [AppComponent],
     providers: [
-        UpdaterService as any,
-        {provide: UPDATE_API_URL, useValue: config.apiUrl}
+        UpdaterService as any
     ]
 })
 export class AppModule { }

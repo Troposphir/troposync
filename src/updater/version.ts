@@ -15,6 +15,10 @@ export class Version {
         this.patch = patch;
     }
 
+    public static fromObject(version: {major: number, minor: number, patch: number}): Version {
+        return new Version(version.major, version.minor, version.patch);
+    }
+
     public static fromString(versionString: string): Version {
         let matches = /^(\d+)\.(\d+)\.(\d+)$/.exec(versionString);
         if (matches == null) {

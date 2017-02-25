@@ -13,7 +13,7 @@ const createLauncherWindow = async () => {
     height: 700,
     frame: false,
     resizable: true,
-    minWidth: 860,
+    minWidth: 1000,
     minHeight: 700,
     webPreferences: {
       experimentalFeatures: true

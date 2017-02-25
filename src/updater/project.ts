@@ -72,7 +72,7 @@ export class Project {
     }
 
     public async save(): Promise<void> {
-        await fs.writeJson(path.join(this.rootPath, "status.json"), {
+        await fs.writeJson(path.join(this.workPath, "status.json"), {
             modules: this.modules.map(m => ({
                 name: m.name,
                 version: m.version.toString(),
@@ -82,22 +82,25 @@ export class Project {
     }
 
     public async listFiles(): Promise<FileInfo[]> {
-        let workPath = getWorkPath(this.rootPath);
         let files = await Promise.all(lodash(this.modules)
             .reverse()
             .filter("enabled")
-            .map(m => deepFileList(path.join(workPath, m.name)))
+            .map(m => deepFileList(path.join(this.workPath, m.name)))
             .value()
         );
         return lodash(files)
             .flatten()
             .map((file: string) => {
-                let relative = path.relative(workPath, file);
+                let relative = path.relative(this.workPath, file);
                 let module = relative.split(path.sep, 2)[0];
-                return new FileInfo(path.relative(path.join(workPath, module), file), module);
+                return new FileInfo(path.relative(path.join(this.workPath, module), file), module);
             })
             .filter(i => IGNORED_EXTENSIONS.indexOf(path.extname(i.filePath)) < 0)
             .uniqBy(i => i.filePath)
             .value();
+    }
+
+    public getFullPath(module: string, file: string): string {
+        return path.join(this.workPath, module, file);
     }
 }

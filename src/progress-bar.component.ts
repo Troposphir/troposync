@@ -19,7 +19,7 @@ import {isNullOrUndefined} from "util";
             height: 100%;
             background-color: #005e92;
             border-radius: 3px;
-            transition: all .5s ease-in-out;
+            transition: all .2s ease-in-out;
         }
     `]
 })
