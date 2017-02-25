@@ -28,7 +28,13 @@
           "rpm"
         ]
       },
-      "electronPackagerConfig": {},
+      "electronPackagerConfig": {
+        "ignore": [
+          "/\\.idea($|/)",
+          "/\\.sync($|/)",
+          "/node_modules/ts-node($|/)"
+        ]
+      },
       "electronWinstallerConfig": {
         "name": "troposync"
       },
