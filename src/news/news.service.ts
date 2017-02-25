@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 
-import { NewsEntry } from './news';
+import { Card } from '../cards/card';
 import { NEWS } from './mock-news';
 
 @Injectable()
 export class NewsService {
-    getNews(): Promise<NewsEntry[]> {
+    getNews(): Promise<Card[]> {
         return Promise.resolve(NEWS);
     }
 }

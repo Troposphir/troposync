@@ -6,7 +6,7 @@
     <main>
         <section class="news">
             <h2>What's New?</h2>
-            <cards></cards>
+            <news></news>
         </section>
         <section class="featured">
             <h2>Featured Levels</h2>
@@ -20,6 +20,6 @@
             <progress-bar [value]="status == null? 1 : (status.currentStep /status.stepCount)"></progress-bar>
             <div class="progress-info">{{process}}{{status == null? "" : ":"}} {{status?.payload}}</div>
         </div>
-        <button disabled>Play</button>
+        <button [disabled]="!isPlayable">Play</button>
     </footer>
 </div>

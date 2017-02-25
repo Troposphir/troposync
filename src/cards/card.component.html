@@ -1,7 +1,6 @@
-<div class="news-card">
-    <img [src]="newsEntry.img_src" />
+<div class="card" [style.backgroundImage]="'url(' + model.image + ')'">
     <div class="info">
-        <div class="news-title">{{newsEntry.title}}</div>
-        <div class="news-desc">{{newsEntry.description}}</div>
+        <h3>{{model.title}}</h3>
+        <span class="description">{{model.description}}</span>
     </div>
 </div>
