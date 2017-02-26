@@ -32,7 +32,7 @@ npm run serve
 ## Configuring filesystem in development
 
 If you're running in development with the intention on working on the updater code, 
-you'll need to setup the filesystem:
+you'll need to setup the server filesystem:
 
 Create the following directory structure:
 
@@ -40,8 +40,6 @@ Create the following directory structure:
     |-depot/**/.sync/
     | |-base/
     |   |-status.json
-    |-.sync/
-    | |-status.json
     |-sync.json
     
 There are a few key parts here:
@@ -50,11 +48,10 @@ There are a few key parts here:
    Each folder in `depot/**/.sync/`is a release, and the file `status.json` describes the 
    versions that each release represents. You will need at least one release configured 
    to successfully test the updater.
- - `.sync/` This is the **client** update root, you just need the `status.json`, configure whatever modules
-   you want to use there. The convention is the first module is called "base", but this isn't enforced.
-   You'll need to configure at least one module to use the updater.
- - `sync.json` Here lies the general launcher configuration, you can copy a default one from
-   `sync.example.json`. The server uses the example port by default.
+ - `sync.json` Here lies the general launcher **client** configuration, you can copy a 
+   default one from `sync.example.json`. The server uses the example port by default.
+   
+**The client structure is stored in Electron's `appData` special path, in the directory `troposync`.**
  
 ## The `status.json` files
 

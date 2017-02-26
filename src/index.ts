@@ -1,6 +1,5 @@
 import { app, ipcMain, BrowserWindow } from 'electron';
 import * as path from "path";
-import * as log from "electron-log";
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
