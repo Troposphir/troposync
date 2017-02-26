@@ -44,12 +44,12 @@ export class Project {
 
     public get workPath() {return getWorkPath(this.rootPath);}
 
-    public static async open(root: string, create: boolean = false): Promise<Project> {
+    public static async open(root: string, createWithModules?: string[]): Promise<Project> {
         let workPath = getWorkPath(root);
         let descriptor: {
             modules: {name: string, version: string, enabled: boolean}[]
         };
-        if (create) {
+        if (createWithModules) {
             await fs.mkdirs(workPath);
         } else {
             let stat = await fs.stat(root);
@@ -76,6 +76,20 @@ export class Project {
             return mod;
         });
         project.rootPath = path.resolve(path.normalize(root));
+
+        // insert required modules
+        if (createWithModules) {
+            for (let moduleName of createWithModules) {
+                if (project.getModule(moduleName)) {
+                    continue;
+                }
+                let descriptor = new ModuleDescriptor();
+                descriptor.name = moduleName;
+                descriptor.enabled = true;
+                descriptor.version = Version.fromString("0.0.0");
+                project.modules.push(descriptor);
+            }
+        }
 
         // guarantee existance of correct internal structure
         await project.save();

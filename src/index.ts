@@ -15,12 +15,6 @@ app.setPath("userData", path.join(
     "troposync"
 ));
 
-// Configure logging
-log.transports.console = false;
-log.transports.file.level = "info";
-log.transports.file.format = "[{level}] {h}:{i}:{s}.{ms}: {text}";
-log.transports.file.file = path.join(app.getPath("userData"), "log.txt");
-
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.

@@ -48,7 +48,7 @@ export class AppComponent implements OnInit {
     private async startUpdate(): Promise<void> {
         try {
             this.process = "Checking for updates";
-            let project = await Project.open(remote.app.getPath("userData"), true);
+            let project = await Project.open(remote.app.getPath("userData"), ["base"]);
             let modulesToUpdate = await this.updater.getChanges(project);
             for (let module of modulesToUpdate) {
                 this.process = `Updating module ${module.name}`;
