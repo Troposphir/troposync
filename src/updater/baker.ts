@@ -1,4 +1,4 @@
-import * as rimraf from "rimraf-then";
+import rimraf = require("rimraf-then");
 import * as lodash from "lodash";
 import * as fs from "fs-promise";
 import * as path from "path";
@@ -30,7 +30,7 @@ export class ProjectBaker {
                 await fs.copy(sourcePath, destination);
             }
             observer.next(new ProcessStatus(id, files.length, files.length, `Moving temporary folder`));
-            await rimraf(destinationRoot, {disableGlob: true});
+            await rimraf(destinationRoot);
             await fs.rename(tempRoot, destinationRoot);
             observer.complete();
         });

@@ -1,10 +1,29 @@
 import { app, ipcMain, BrowserWindow } from 'electron';
+import * as path from "path";
+import * as log from "electron-log";
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: Electron.BrowserWindow | null;
 
 const isDevMode = process.execPath.match(/[\\/]electron/);
+
+// Force appdata path to be called "troposync", even in dev mode
+// (where by default it would be Electron)
+app.setPath("userData", path.join(
+    path.dirname(app.getPath("userData")),
+    "troposync"
+));
+
+// Configure logging
+log.transports.console = false;
+log.transports.file.level = "info";
+log.transports.file.format = "[{level}] {h}:{i}:{s}.{ms}: {text}";
+log.transports.file.file = path.join(app.getPath("userData"), "log.txt");
+
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
 
 const createLauncherWindow = async () => {
   let splashWindow = new BrowserWindow({
@@ -59,10 +78,6 @@ const createLauncherWindow = async () => {
     mainWindow = null;
   });
 };
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 app.on('ready', createLauncherWindow);
 
 // Quit when all windows are closed.

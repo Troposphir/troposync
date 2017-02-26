@@ -1,5 +1,5 @@
-import fs = require("fs-promise");
-import {ipcRenderer} from "electron";
+import {ipcRenderer, remote} from "electron";
+import * as log from "electron-log";
 
 import {NgModule, OnInit, Inject} from '@angular/core';
 import {HttpModule} from '@angular/http';
@@ -19,7 +19,7 @@ import {ProjectBaker} from "./updater/baker";
 export let config: {
     apiUrl: string,
     gameRoot: string
-} = fs.readJsonSync("./sync.json");
+} = require("../sync.json");
 
 @Component({
     selector: 'App',
@@ -38,7 +38,7 @@ export class AppComponent implements OnInit {
     private statusUpdater(): (status: ProcessStatus<string>) => void {
         return (status: ProcessStatus<string>) => {
             this.status.add(status);
-            console.debug(
+            log.debug(
                 `Update Status Changed (${this.status.currentStep}/${this.status.stepCount}):`,
                 status.payload
             );
@@ -48,7 +48,7 @@ export class AppComponent implements OnInit {
     private async startUpdate(): Promise<void> {
         try {
             this.process = "Checking for updates";
-            let project = await Project.open(".");
+            let project = await Project.open(remote.app.getPath("userData"), true);
             let modulesToUpdate = await this.updater.getChanges(project);
             for (let module of modulesToUpdate) {
                 this.process = `Updating module ${module.name}`;
@@ -56,7 +56,7 @@ export class AppComponent implements OnInit {
                     let observable = this.updater.performChange(project, module.name, change);
                     await observable.forEach(this.statusUpdater());
                 }
-                project.getModule(module.name).version = module.version;
+                project.getModule(module.name)!.version = module.version;
             }
             this.status.finish()
             this.process = "Done downloading";
@@ -71,11 +71,11 @@ export class AppComponent implements OnInit {
             this.process = "Ready to play";
         } catch (e) {
             this.process = "Error ocurred while updating. Check devtools for details.";
-            console.error(e);
+            log.error(e);
         }
         this.status.finish();
         this.isPlayable = true;
-        console.debug("Updating concluded");
+        log.debug("Updating concluded");
     }
 
     ngOnInit(): void {

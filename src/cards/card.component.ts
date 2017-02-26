@@ -1,4 +1,4 @@
-import{shell} from 'electron';
+import {shell} from 'electron';
 import {Component, Input} from '@angular/core';
 import { Card } from './card';
 
@@ -55,7 +55,6 @@ export class CardComponent {
     @Input() model: Card;
 
     clicked() {
-        console.log('ev');
         shell.openExternal(this.model.action);
     }
 }

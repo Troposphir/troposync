@@ -40,21 +40,33 @@ export class Project {
     public modules: ModuleDescriptor[];
     public rootPath: string;
 
+    private constructor() {}
+
     public get workPath() {return getWorkPath(this.rootPath);}
 
-    public static async open(root: string): Promise<Project> {
-        let stat = await fs.stat(root);
-        if (!stat.isDirectory()) {
-            throw new Error("Project root not found");
-        }
-        let workpath = getWorkPath(root);
-        if (!(await fs.stat(workpath)).isDirectory()) {
-            throw new Error("Directory is not a valid troposync project");
-        }
-        let contents = await fs.readFile(path.join(workpath, "status.json"));
+    public static async open(root: string, create: boolean = false): Promise<Project> {
+        let workPath = getWorkPath(root);
         let descriptor: {
             modules: {name: string, version: string, enabled: boolean}[]
-        } = JSON.parse(contents.toString("utf8"));
+        };
+        if (create) {
+            await fs.mkdirs(workPath);
+        } else {
+            let stat = await fs.stat(root);
+            if (!stat.isDirectory()) {
+                throw new Error("Project root not found");
+            }
+            if (!(await fs.stat(workPath)).isDirectory()) {
+                throw new Error("Directory is not a valid troposync project");
+            }
+        }
+        try {
+            let contents = await fs.readFile(path.join(workPath, "status.json"));
+            descriptor = JSON.parse(contents.toString("utf8"));
+        } catch (e) {
+            descriptor = {modules: []};
+        }
+
         let project = new Project();
         project.modules = descriptor.modules.map(m => {
             let mod = new ModuleDescriptor();
@@ -64,14 +76,21 @@ export class Project {
             return mod;
         });
         project.rootPath = path.resolve(path.normalize(root));
+
+        // guarantee existance of correct internal structure
+        await project.save();
         return project;
     }
 
-    public getModule(name: string): ModuleDescriptor {
+    public getModule(name: string): ModuleDescriptor | undefined {
         return lodash.find(this.modules, m => m.name === name);
     }
 
     public async save(): Promise<void> {
+        // ensure module paths exist
+        for (let module of this.modules) {
+            await fs.mkdirs(path.join(this.workPath, module.name));
+        }
         await fs.writeJson(path.join(this.workPath, "status.json"), {
             modules: this.modules.map(m => ({
                 name: m.name,

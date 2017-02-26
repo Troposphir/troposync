@@ -6,6 +6,7 @@ import * as path from "path";
 import {FileChange, ModuleChange} from "../updater/change";
 import {async_handler} from "./utils";
 import {hashFile} from "../updater/utils";
+import * as log from "electron-log";
 
 /*
  * The server works a bit different than the client:
@@ -34,7 +35,7 @@ async function getUpdatesSinceVersion(project: Project, version: Version): Promi
     let files = await project.listFiles();
     //restore enable status
     for (let updateName in previousEnableStates) {
-        project.getModule(updateName).enabled = previousEnableStates[updateName];
+        project.getModule(updateName)!.enabled = previousEnableStates[updateName];
     }
 
     function getAction(file: FileInfo): string {
@@ -95,7 +96,7 @@ UpdatesRouter.get("/latest", async_handler(async (req: Request, res: Response) =
                 await getUpdatesSinceVersion(module, bundle.clientVersion)
             );
         } catch (e) {
-            console.error(e);
+            log.error(e);
             return null;
         }
     }));
