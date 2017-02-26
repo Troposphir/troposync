@@ -6,7 +6,6 @@ import * as path from "path";
 import {FileChange, ModuleChange} from "../updater/change";
 import {async_handler} from "./utils";
 import {hashFile} from "../updater/utils";
-import * as log from "electron-log";
 
 /*
  * The server works a bit different than the client:
@@ -96,7 +95,7 @@ UpdatesRouter.get("/latest", async_handler(async (req: Request, res: Response) =
                 await getUpdatesSinceVersion(module, bundle.clientVersion)
             );
         } catch (e) {
-            log.error(e);
+            console.error(e);
             return null;
         }
     }));
