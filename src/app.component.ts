@@ -1,4 +1,5 @@
 import fs = require("fs-promise");
+import {ipcRenderer} from "electron";
 
 import {NgModule, OnInit, Inject} from '@angular/core';
 import {HttpModule} from '@angular/http';
@@ -78,6 +79,7 @@ export class AppComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        ipcRenderer.send("application-started");
         //noinspection JSIgnoredPromiseFromCall
         this.startUpdate();
     }

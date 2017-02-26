@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron';
+import { app, ipcMain, BrowserWindow } from 'electron';
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -7,10 +7,19 @@ let mainWindow: Electron.BrowserWindow | null;
 const isDevMode = process.execPath.match(/[\\/]electron/);
 
 const createLauncherWindow = async () => {
+  let splashWindow = new BrowserWindow({
+    width: 150,
+    height: 150,
+    show: false,
+    frame: false,
+    resizable: false,
+    transparent: true
+  });
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1100,
     height: 700,
+    show: false,
     frame: false,
     resizable: true,
     minWidth: 1000,
@@ -20,6 +29,7 @@ const createLauncherWindow = async () => {
     }
   });
 
+  splashWindow.loadURL(`file://${__dirname}/splash.html`);
   // and load the index.html of the app.
   mainWindow.loadURL(`file://${__dirname}/index.html`);
 
@@ -27,6 +37,19 @@ const createLauncherWindow = async () => {
   if (isDevMode) {
     mainWindow.webContents.openDevTools();
   }
+
+  // Stop splash screen a little later after the application is done
+  // initializing, to prevent flash of unstyled content.
+  ipcMain.on("application-started", () => setTimeout(() => {
+    splashWindow.close();
+    if (mainWindow) {
+      mainWindow.show();
+    }
+  }, 300));
+
+  splashWindow.on("ready-to-show", () => {
+    splashWindow.show();
+  });
 
   // Emitted when the window is closed.
   mainWindow.on('closed', () => {
