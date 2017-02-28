@@ -18,8 +18,8 @@ app.setPath("userData", path.join(
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 
-const createLauncherWindow = async () => {
-  let splashWindow = new BrowserWindow({
+const createLauncherWindow: () => Promise<any> = async() => {
+  let splashWindow: Electron.BrowserWindow | null = new BrowserWindow({
     width: 150,
     height: 150,
     show: false,
@@ -53,14 +53,19 @@ const createLauncherWindow = async () => {
   // Stop splash screen a little later after the application is done
   // initializing, to prevent flash of unstyled content.
   ipcMain.on("application-started", () => setTimeout(() => {
-    splashWindow.close();
+    if (splashWindow) {
+      splashWindow.close();
+      splashWindow = null;
+    }
     if (mainWindow) {
       mainWindow.show();
     }
   }, 300));
 
   splashWindow.on("ready-to-show", () => {
-    splashWindow.show();
+    if (splashWindow) {
+      splashWindow.show();
+    }
   });
 
   // Emitted when the window is closed.
