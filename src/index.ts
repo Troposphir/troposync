@@ -25,6 +25,7 @@ const createLauncherWindow: () => Promise<any> = async() => {
     show: false,
     frame: false,
     resizable: false,
+    hasShadow: false,
     transparent: true
   });
   // Create the browser window.
