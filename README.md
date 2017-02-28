@@ -19,7 +19,7 @@ npm install
 To run the application, just `electron-forge start`, which will take care of compiling everything 
 properly. In development you can use Ctrl+R to reload the webpage of the current window for faster 
 iterations (note that this does not reload any code outside the browser window environment, 
-e.g. `index.ts` and the like!)
+e.g. `index.d.ts` and the like!)
 
 ## Running the server
 
