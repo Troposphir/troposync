@@ -75,7 +75,6 @@
     "promise-mysql": "^3.0.0",
     "promise-timeout": "^1.0.0",
     "reflect-metadata": "^0.1.9",
-    "rimraf-then": "^1.0.1",
     "rxjs": "^5.1.1",
     "ts-node": "^2.1.0",
     "tslib": "^1.5.0",
