@@ -1,5 +1,6 @@
 import {ipcRenderer, remote} from "electron";
 import * as log from "electron-log";
+import * as path from "path";
 
 import {NgModule, OnInit, Inject} from '@angular/core';
 import {HttpModule} from '@angular/http';
@@ -15,10 +16,12 @@ import {UpdaterService} from "./updater.service";
 import {Project} from "./updater/project";
 import {ProcessStatus, ProcessStatusGroup} from "./updater/process-status";
 import {ProjectBaker} from "./updater/baker";
+import startProgram from "./utils/startProgram";
 
 export let config: {
     apiUrl: string,
-    gameRoot: string
+    gameRoot: string,
+    executable: string
 } = require("../sync.json");
 
 @Component({
@@ -58,7 +61,7 @@ export class AppComponent implements OnInit {
                 }
                 project.getModule(module.name)!.version = module.version;
             }
-            this.status.finish()
+            this.status.finish();
             this.process = "Done downloading";
             await project.save();
 
@@ -76,6 +79,11 @@ export class AppComponent implements OnInit {
         this.status.finish();
         this.isPlayable = true;
         log.debug("Updating concluded");
+    }
+
+    //noinspection JSMethodCanBeStatic
+    public startGame(): void {
+        startProgram(path.join(config.gameRoot, config.executable));
     }
 
     ngOnInit(): void {

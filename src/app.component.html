@@ -29,6 +29,6 @@
                     [hidden]="status.stepCount == 0"
             ></progress-bar>
         </div>
-        <button [disabled]="!isPlayable">{{isPlayable? "Play" : "Updating"}}</button>
+        <button [disabled]="!isPlayable" (click)="startGame()">{{isPlayable? "Play" : "Updating"}}</button>
     </footer>
 </div>

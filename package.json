@@ -36,7 +36,8 @@
         "ignore": [
           "/\\.idea($|/)",
           "/\\.sync($|/)",
-          "/node_modules/ts-node($|/)"
+          "/node_modules/ts-node($|/)",
+          "\\.d\\.ts$"
         ]
       },
       "electronWinstallerConfig": {
