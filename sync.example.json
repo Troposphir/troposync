@@ -1,5 +1,6 @@
 {
   "apiUrl": "http://localhost:9090",
   "gameRoot": "./dist",
-  "executable": "game.exe"
+  "executable": "game.exe",
+  "requiredModules": ["launcher", "base"]
 }

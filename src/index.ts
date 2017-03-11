@@ -48,6 +48,7 @@ function createSplashWindow(): Electron.BrowserWindow {
         height: 150,
         show: false,
         frame: false,
+        closable: false,
         resizable: false,
         hasShadow: false,
         transparent: true

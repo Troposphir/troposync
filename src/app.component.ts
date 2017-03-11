@@ -21,7 +21,8 @@ import startProgram from "./utils/startProgram";
 export let config: {
     apiUrl: string,
     gameRoot: string,
-    executable: string
+    executable: string,
+    requiredModules: string[]
 } = require("../sync.json");
 
 @Component({
@@ -51,7 +52,7 @@ export class AppComponent implements OnInit {
     private async startUpdate(): Promise<void> {
         try {
             this.process = "Checking for updates";
-            let project = await Project.open(remote.app.getPath("userData"), ["base"]);
+            let project = await Project.open(remote.app.getPath("userData"), config.requiredModules);
             let modulesToUpdate = await this.updater.getChanges(project);
             for (let module of modulesToUpdate) {
                 this.process = `Updating module ${module.name}`;
