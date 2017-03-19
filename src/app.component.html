@@ -20,13 +20,12 @@
     <footer>
         <div class="progress-status">
             <div class="progress-info">
-                <h4>{{process}}</h4>
-                <span class="process-detail">{{status.current?.payload}}</span>
+                <h4>{{state.heading}}</h4>
+                <span class="process-detail">{{state.status?.payload}}</span>
             </div>
             <progress-bar
-                    [value]="status.currentStep"
-                    [max]="status.stepCount"
-                    [hidden]="status.stepCount == 0"
+                    [value]="state.status?.currentStep"
+                    [max]="state.status?.stepCount"
             ></progress-bar>
         </div>
         <button [disabled]="!isPlayable" (click)="startGame()">{{isPlayable? "Play" : "Updating"}}</button>

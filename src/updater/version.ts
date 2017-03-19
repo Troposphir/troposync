@@ -41,15 +41,8 @@ export class Version {
     }
 
     public compare(other: Version): number {
-        if (this.patch != other.patch) {
-            return this.patch - other.patch;
-        }
-        if (this.minor != other.minor) {
-            return this.minor - other.minor;
-        }
-        if (this.major != other.major) {
-            return this.major - other.major;
-        }
-        return 0;
+        return (this.major - other.major) * 1000000
+             + (this.minor - other.minor) * 1000
+             + (this.patch - other.patch);
     }
 }

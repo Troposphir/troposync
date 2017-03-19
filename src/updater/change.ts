@@ -12,6 +12,7 @@ export class FileChange {
     public constructor(
         public file: string,
         public action: string,
-        public hash: string
+        public hash: string,
+        public size: number
     ) {}
 }

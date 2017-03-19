@@ -2,7 +2,7 @@ import {Injectable, Inject} from '@angular/core';
 
 import { Card } from '../cards/card';
 import {Http, RequestOptions, URLSearchParams} from "@angular/http";
-import {config} from "../app.component";
+import * as config from "../config";
 
 @Injectable()
 export class NewsService {

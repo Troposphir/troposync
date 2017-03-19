@@ -12,7 +12,7 @@ export function async_handler(handler: AsyncHandler): RequestHandler {
         }
         promise.catch(e => {
             console.error(e);
-            res.send(500);
+            res.sendStatus(500);
         });
     }
 }

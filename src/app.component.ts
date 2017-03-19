@@ -5,7 +5,7 @@ import * as path from "path";
 import {NgModule, OnInit, Inject} from '@angular/core';
 import {HttpModule} from '@angular/http';
 import {BrowserModule} from '@angular/platform-browser';
-import {Component} from '@angular/core';
+import {Component, NgZone} from '@angular/core';
 
 import {ProgressBarComponent} from "./progress-bar.component";
 import {WindowControlsComponent} from "./window-controls.component";
@@ -14,16 +14,16 @@ import {CardComponent} from './cards/card.component';
 
 import {UpdaterService} from "./updater.service";
 import {Project} from "./updater/project";
-import {ProcessStatus, ProcessStatusGroup} from "./updater/process-status";
+import {ProcessGroup, ProcessStatus} from "./updater/process-status";
 import {ProjectBaker} from "./updater/baker";
 import startProgram from "./utils/startProgram";
+import * as config from "./config";
+import {Observable, Observer} from "rxjs";
 
-export let config: {
-    apiUrl: string,
-    gameRoot: string,
-    executable: string,
-    requiredModules: string[]
-} = require("../sync.json");
+export type UpdateState = {
+    heading: string,
+    status?: ProcessStatus<string>
+}
 
 @Component({
     selector: 'App',
@@ -31,55 +31,53 @@ export let config: {
     styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-    public process: string;
     public isPlayable: boolean = false;
-    public status: ProcessStatusGroup<string>;
+    public processGroup: ProcessGroup<string> = new ProcessGroup<string>(undefined, "");
+    public state: UpdateState;
 
-    constructor(@Inject(UpdaterService) private updater: UpdaterService) {
-        this.status = new ProcessStatusGroup<string>();
-    }
+    constructor(
+        @Inject(UpdaterService) private updater: UpdaterService,
+        @Inject(NgZone) private zone: NgZone
+    ) {}
 
-    private statusUpdater(): (status: ProcessStatus<string>) => void {
-        return (status: ProcessStatus<string>) => {
-            this.status.add(status);
-            log.debug(
-                `Update Status Changed (${this.status.currentStep}/${this.status.stepCount}):`,
-                status.payload
-            );
-        }
-    }
-
-    private async startUpdate(): Promise<void> {
-        try {
-            this.process = "Checking for updates";
-            let project = await Project.open(remote.app.getPath("userData"), config.requiredModules);
-            let modulesToUpdate = await this.updater.getChanges(project);
-            for (let module of modulesToUpdate) {
-                this.process = `Updating module ${module.name}`;
-                for (let change of module.changes) {
-                    let observable = this.updater.performChange(project, module.name, change);
-                    await observable.forEach(this.statusUpdater());
+    private startUpdate(): Observable<UpdateState> {
+        return Observable.create(async(observer: Observer<UpdateState>) => {
+            let heading = "Checking for updates";
+            observer.next({heading, status: new ProcessStatus<string>(0, 1, "")});
+            try {
+                let project = await Project.open(remote.app.getPath("userData"), config.requiredModules);
+                let modulesToUpdate = await this.updater.getChanges(project);
+                for (let module of modulesToUpdate) {
+                    heading = `Updating module ${module.name}`;
+                    let changes = module.changes.map(c => this.updater.change(project, module.name, c));
+                    this.processGroup.clear();
+                    this.processGroup.extend(changes);
+                    await this.processGroup.fire().forEach(status => observer.next({heading, status}));
+                    project.getModule(module.name)!.version = module.version;
                 }
-                project.getModule(module.name)!.version = module.version;
-            }
-            this.status.finish();
-            this.process = "Done downloading";
-            await project.save();
+                heading = "Done downloading";
+                await project.save();
 
-            if (modulesToUpdate.length > 0) {
-                this.process = "Applying updates";
-                await ProjectBaker.bake(project, config.gameRoot)
-                    .forEach(this.statusUpdater());
-            }
+                if (modulesToUpdate.length > 0) {
+                    heading = "Applying updates";
+                    this.processGroup.clear();
+                    this.processGroup.add(new ProjectBaker({
+                        project: project,
+                        targetDirectorySuffix: config.gameRoot
+                    }));
+                    await this.processGroup.fire().forEach(status => observer.next({heading, status}));
+                }
 
-            this.process = "Ready to play";
-        } catch (e) {
-            this.process = "Error ocurred while updating. Check devtools for details.";
-            log.error(e);
-        }
-        this.status.finish();
-        this.isPlayable = true;
-        log.debug("Updating concluded");
+                heading = "Ready to play";
+            } catch (e) {
+                heading = "Error ocurred while updating. Check devtools for details.";
+                log.error(e);
+                observer.error(e);
+            }
+            this.isPlayable = true;
+            observer.complete();
+            log.debug("Updating concluded");
+        })
     }
 
     //noinspection JSMethodCanBeStatic
@@ -89,8 +87,9 @@ export class AppComponent implements OnInit {
 
     ngOnInit(): void {
         ipcRenderer.send("application-started");
-        //noinspection JSIgnoredPromiseFromCall
-        this.startUpdate();
+        this.startUpdate().subscribe(state => this.zone.run(() => {
+            this.state = state;
+        }));
     }
 }
 

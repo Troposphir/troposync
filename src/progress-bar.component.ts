@@ -30,7 +30,8 @@ export class ProgressBarComponent {
 
     public getCompletionFactor(): number  {
         let range = this.max - this.min;
-        return (this.value - this.min) / range;
+        let value = this.value !== undefined? this.value : 0;
+        return (value - this.min) / range;
     }
 
     public _getPercentString(): string | null {

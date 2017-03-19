@@ -3,9 +3,10 @@ import {Version} from "../updater/version";
 import {Project, FileInfo} from "../updater/project";
 import * as lodash from "lodash";
 import * as path from "path";
+import * as fs from "fs-promise";
 import {FileChange, ModuleChange} from "../updater/change";
 import {async_handler} from "./utils";
-import {hashFile} from "../updater/utils";
+import hashFile from "../utils/hashFile";
 
 /*
  * The server works a bit different than the client:
@@ -46,8 +47,9 @@ async function getUpdatesSinceVersion(project: Project, version: Version): Promi
     }
     return Promise.all(lodash.map(files, async f => {
         let filePath = path.posix.normalize(f.filePath.replace(path.sep, path.posix.sep));
-        let hash = await hashFile(project.getFullPath(f.providingModule, f.filePath));
-        return new FileChange(filePath, getAction(f), hash);
+        let fullPath = project.getFullPath(f.providingModule, f.filePath);
+        let hash = (await hashFile(fullPath).toPromise()).payload;
+        return new FileChange(filePath, getAction(f), hash, (await fs.stat(fullPath)).size);
     }));
 }
 

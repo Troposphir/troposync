@@ -1,52 +1,107 @@
 import * as lodash from "lodash";
+import {Observable, Observer} from "rxjs";
+
+export abstract class Process<TOptions, TStatus> {
+    private state: ProcessStatus<TStatus> | null = null;
+
+    constructor(protected options: TOptions) {}
+
+    protected abstract run(): Observable<ProcessStatus<TStatus>>;
+    protected abstract getEstimate(): Promise<ProcessStatus<TStatus> | null>;
+    protected abstract get defaultPayload(): TStatus;
+
+    public fire(): Observable<ProcessStatus<TStatus>> {
+        if (this.state == null) {
+            this.state = new ProcessStatus(0, 1, this.defaultPayload);
+        }
+        return this.run().map(value => this.state!.replace(value, lodash.identity));
+    }
+
+    public async getMutableStatusOrEstimate(): Promise<ProcessStatus<TStatus> | null> {
+        if (this.state == null) {
+            let estimate = await this.getEstimate();
+            this.state = estimate;
+            return estimate;
+        }
+        return this.state;
+    }
+}
 
 export class ProcessStatus<T> {
-    public id: string;
     public currentStep: number;
     public stepCount: number;
     public payload: T;
 
-    public constructor(id: string, step: number, max: number, info: T) {
-        this.id = id;
-        this.currentStep = step;
-        this.stepCount = max;
-        this.payload = info;
+    public constructor(step: number, max: number, info: T) {
+        this.advance(step, max, info);
+    }
+
+    public replace(source: ProcessStatus<T>, transform: (payload: T) => T = lodash.identity): ProcessStatus<T> {
+        this.currentStep = source.currentStep;
+        this.stepCount = source.stepCount;
+        this.payload = transform(source.payload);
+        return this;
+    }
+
+    public advance(currentStep: number, stepCount: number, payload: T): ProcessStatus<T> {
+        this.currentStep = currentStep;
+        this.stepCount = stepCount;
+        this.payload = payload;
+        return this;
     }
 }
 
-export class ProcessStatusGroup<T> {
-    private statuses: ProcessStatus<T>[];
-    private finished: boolean = false;
-
-    public constructor() {
-        this.statuses = [];
+export class ProcessGroup<T> extends Process<any, T> {
+    public constructor(options: any, protected defaultPayload: T) {
+        super(options);
     }
 
-    public get stepCount(): number {
-        return lodash.sumBy(this.statuses, "stepCount");
+    private processes: Process<any, T>[] = [];
+
+    public add(item: Process<any, T>) {
+        this.processes.push(item);
     }
 
-    public get currentStep(): number {
-        return lodash.sumBy(this.statuses, "currentStep");
+    public extend(items: Iterable<Process<any, T>>) {
+        this.processes.push(...items);
     }
 
-    public get current(): ProcessStatus<T> | null {
-        if (this.finished) {
+    public clear() {
+        this.processes.splice(0);
+    }
+
+    protected async getEstimate(): Promise<ProcessStatus<T> | null> {
+        let status = new ProcessStatus<T | undefined>(0, 0, undefined);
+        console.log(status);
+        for (let process of this.processes) {
+            let estimate = await process.getMutableStatusOrEstimate();
+            console.log(estimate);
+            if (estimate == null) {
+                continue;
+            }
+            status.payload = estimate!.payload;
+            status.currentStep += estimate!.currentStep;
+            status.stepCount += estimate!.stepCount;
+        }
+        if (status.payload == undefined) {
             return null;
         }
-        return lodash.last(this.statuses);
+        return status as ProcessStatus<T>;
     }
 
-    public add(process: ProcessStatus<T>): void {
-        let index = lodash.findIndex(this.statuses, s => s.id == process.id);
-        if (index < 0) {
-            this.statuses.push(process);
-        } else {
-            this.statuses[index] = process;
-        }
-    }
-
-    public finish(): void {
-        this.finished = true;
+    protected run(): Observable<ProcessStatus<T>> {
+        return Observable.create(async(observer: Observer<ProcessStatus<T>>) => {
+            for (let process of this.processes) {
+                await process.fire().forEach(async(status: ProcessStatus<T>) => {
+                    let totalStatus = await this.getMutableStatusOrEstimate();
+                    if (totalStatus == null) {
+                        return;
+                    }
+                    totalStatus.payload = status.payload;
+                    observer.next(totalStatus);
+                });
+            }
+            observer.complete();
+        });
     }
 }

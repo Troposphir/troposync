@@ -38,6 +38,15 @@ async function installOrRunLauncher(): Promise<Electron.BrowserWindow> {
         await fs.copy(process.cwd(), app.getPath("userData"));
         process.noAsar = oldNoAsar;
     }
+    // Run temporary copy when in Windows to prevent failures due to file locking
+    if (process.platform == "win32") {
+        let copyPath = path.join(
+            app.getPath("userData"),
+            executableName.replace(/\.exe$/, ".tmp.exe")
+        );
+        await fs.copy(targetPath, copyPath);
+        targetPath = copyPath;
+    }
     startProgram(targetPath);
     throw app.exit();
 }
@@ -87,6 +96,7 @@ function createLauncherWindow(splash?: Electron.BrowserWindow): void {
     // initializing, to prevent flash of unstyled content.
     ipcMain.on("application-started", () => setTimeout(() => {
         if (splash) {
+            splash.setClosable(true);
             splash.close();
             splash = undefined;
         }
