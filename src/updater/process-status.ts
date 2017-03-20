@@ -11,10 +11,11 @@ export abstract class Process<TOptions, TStatus> {
     protected abstract get defaultPayload(): TStatus;
 
     public fire(): Observable<ProcessStatus<TStatus>> {
-        if (this.state == null) {
-            this.state = new ProcessStatus(0, 1, this.defaultPayload);
-        }
-        return this.run().map(value => this.state!.replace(value, lodash.identity));
+        let state = new ProcessStatus(0, 1, this.defaultPayload);
+        return this.run().do(value => {
+            state.replace(value, lodash.identity);
+            this.state = state;
+        });
     }
 
     public async getMutableStatusOrEstimate(): Promise<ProcessStatus<TStatus> | null> {
@@ -72,10 +73,8 @@ export class ProcessGroup<T> extends Process<any, T> {
 
     protected async getEstimate(): Promise<ProcessStatus<T> | null> {
         let status = new ProcessStatus<T | undefined>(0, 0, undefined);
-        console.log(status);
         for (let process of this.processes) {
             let estimate = await process.getMutableStatusOrEstimate();
-            console.log(estimate);
             if (estimate == null) {
                 continue;
             }
@@ -91,12 +90,14 @@ export class ProcessGroup<T> extends Process<any, T> {
 
     protected run(): Observable<ProcessStatus<T>> {
         return Observable.create(async(observer: Observer<ProcessStatus<T>>) => {
+            let totalStatus = new ProcessStatus(0, 1, this.defaultPayload);
             for (let process of this.processes) {
                 await process.fire().forEach(async(status: ProcessStatus<T>) => {
-                    let totalStatus = await this.getMutableStatusOrEstimate();
                     if (totalStatus == null) {
                         return;
                     }
+                    totalStatus.currentStep += status.currentStep;
+                    totalStatus.stepCount += status.stepCount;
                     totalStatus.payload = status.payload;
                     observer.next(totalStatus);
                 });
